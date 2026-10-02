@@ -9,8 +9,7 @@ venv/
 # Delete these two lines later if you decide to commit small models.
 ml-backend/data/*
 !ml-backend/data/.gitkeep
-ml-backend/models/*
-!ml-backend/models/.gitkeep
+
 
 # Env / secrets
 .env

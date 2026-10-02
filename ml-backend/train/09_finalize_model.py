@@ -1,0 +1,45 @@
+"""
+Step 5e: package the chosen model for handoff to the API (Step 6).
+
+Decision: Logistic Regression, threshold 0.40. Chosen because it tied
+with Linear SVM on independent data but exposes predict_proba() and
+interpretable coefficients, which the API needs for confidence scores
+and (later) explainability.
+"""
+import json
+import joblib
+from pathlib import Path
+from datetime import date
+
+BASE = Path(__file__).resolve().parent.parent
+MODEL_DIR = BASE / "models"
+
+model = joblib.load(MODEL_DIR / "logreg.pkl")
+joblib.dump(model, MODEL_DIR / "email_model.pkl")
+
+metadata = {
+    "model_file": "email_model.pkl",
+    "vectorizer_file": "tfidf_vectorizer.pkl",
+    "model_type": "LogisticRegression (scikit-learn)",
+    "decision_threshold": 0.40,
+    "label_convention": {"0": "safe", "1": "phishing"},
+    "usage": (
+        "proba = model.predict_proba(vectorizer.transform([clean_email_text(text)]))[0, 1]; "
+        "verdict = 'phishing' if proba >= 0.40 else 'safe'"
+    ),
+    "trained_on": "kaggle.com/datasets/subhajournal/phishingemails (17,424 emails after cleaning)",
+    "validated_on": "CEAS_08.csv from kaggle.com/datasets/naserabdullahalam/phishing-email-dataset (independent source, 0 exact text overlap)",
+    "metrics_same_source_test_set": {"precision": 0.971, "recall": 0.979, "f1": 0.975},
+    "metrics_independent_holdout_at_threshold_0.40": {"precision": 0.901, "recall": 0.942, "f1": 0.921},
+    "known_limitations": [
+        "Newsletter-styled spam (e.g. content mimicking a legitimate news digest) is sometimes missed",
+        "Legitimate marketing/transactional email (discounts, receipts, alerts) sometimes triggers false positives",
+        "Trained mostly on 2000s-era email style; should be revalidated against modern phishing samples later"
+    ],
+    "last_updated": str(date.today()),
+}
+
+with open(MODEL_DIR / "email_model_meta.json", "w") as f:
+    json.dump(metadata, f, indent=2)
+
+print("Saved models/email_model.pkl and models/email_model_meta.json")
