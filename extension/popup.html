@@ -1,17 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>FraudShield</title>
-  <style>
-    body { font-family: sans-serif; width: 240px; padding: 12px; }
-    h1 { font-size: 16px; margin: 0 0 8px; }
-    p { font-size: 13px; color: #555; }
-  </style>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h1>FraudShield</h1>
-  <p id="status">Setup complete. Live detection is coming in a later step.</p>
-  <script src="popup.js"></script>
+  <header>
+    <img src="icons/icon48.png" alt="" width="20" height="20">
+    <span>FraudShield</span>
+  </header>
+
+  <main id="verdictBand" data-state="loading">
+    <svg class="shield" viewBox="0 0 64 64" aria-hidden="true">
+      <circle class="track" cx="32" cy="32" r="28"/>
+      <circle class="ring" id="ring" cx="32" cy="32" r="28"/>
+      <path class="shape" d="M32 15l13 4.7v9.5c0 8.3-5.4 14.4-13 16.6-7.6-2.2-13-8.3-13-16.6v-9.5z"/>
+      <path class="mark m-safe" pathLength="1" d="M26 30l5 5 8-10"/>
+      <path class="mark m-warn" d="M32 24v8M32 38v.5"/>
+      <path class="mark m-unknown" d="M28 26a4 4 0 1 1 6 3.4c-1.4.8-2 1.5-2 3M32 38v.5"/>
+    </svg>
+    <div class="text">
+      <p id="verdictWord">Checking…</p>
+      <p id="confidence"></p>
+      <p id="reason"></p>
+    </div>
+  </main>
+
+  <p id="subject"></p>
+  <p id="hint" hidden></p>
+
+  <div class="row">
+    <button id="rescanBtn">Rescan</button>
+    <button id="whyBtn">Why?</button>
+    <button id="screenBtn">Scan screen</button>
+  </div>
+
+  <section id="why" hidden>
+    <h2>What pushed this verdict</h2>
+    <ul id="whyList"></ul>
+  </section>
+
+  <div class="row feedback">
+    <button id="reportBtn" class="danger">Report as phishing</button>
+    <button id="safeBtn">It's safe</button>
+  </div>
+  <p id="toast" role="status"></p>
+
+  <footer>
+    <p id="stats"></p>
+    <label class="toggle"><input type="checkbox" id="shieldToggle"> Show floating shield on pages</label>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
 </body>
 </html>
