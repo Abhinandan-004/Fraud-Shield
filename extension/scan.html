@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FraudShield — Scan screen</title>
+  <style>
+    :root { --ink:#15222c; --muted:#5d6c77; --line:#d9e0e5; --state:#6b7a86; }
+    * { box-sizing: border-box; }
+    body { max-width: 760px; margin: 32px auto; padding: 0 20px; font: 15px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--ink); }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    .lead { color: var(--muted); margin: 0 0 20px; max-width: 62ch; }
+    button { padding: 9px 16px; font: inherit; font-weight: 600; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); cursor: pointer; }
+    button.primary { background: #15222c; color: #fff; border-color: #15222c; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible, textarea:focus-visible { outline: 2px solid #2a6df4; outline-offset: 2px; }
+    #status { margin: 14px 0; color: var(--muted); min-height: 22px; }
+    #preview { max-width: 100%; max-height: 240px; border: 1px solid var(--line); border-radius: 4px; display: none; }
+    textarea { width: 100%; height: 160px; padding: 10px; font: 13px/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; }
+    #result { display: none; margin-top: 16px; padding: 14px 16px; border-left: 6px solid var(--state); background: color-mix(in srgb, var(--state) 12%, white); border-radius: 4px; }
+    #result[data-state="fraud"] { --state:#c8321f; } #result[data-state="suspicious"] { --state:#b97b00; } #result[data-state="safe"] { --state:#1f8a5b; }
+    #verdictWord { font-size: 24px; font-weight: 700; color: var(--state); margin: 0; }
+    #links { margin: 10px 0 0; padding-left: 18px; }
+    .panel { margin-top: 18px; }
+    .privacy { margin-top: 28px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; max-width: 70ch; }
+  </style>
+</head>
+<body>
+  <h1>Scan your screen</h1>
+  <p class="lead">Pick a screen, window or tab. FraudShield takes one snapshot, reads the text on it, and checks that text for fraud signs. Useful for screenshots, PDFs and other apps.</p>
+
+  <button id="pickBtn" class="primary">Choose what to scan</button>
+  <p id="status" role="status"></p>
+  <img id="preview" alt="Captured screenshot">
+
+  <div class="panel" id="textPanel" hidden>
+    <label for="ocrText"><strong>Text FraudShield read</strong> (you can fix mistakes, then re-check)</label>
+    <textarea id="ocrText"></textarea>
+    <p><button id="recheckBtn">Check this text again</button></p>
+  </div>
+
+  <div id="result" data-state="unknown">
+    <p id="verdictWord"></p>
+    <p id="confidence"></p>
+    <ul id="links"></ul>
+  </div>
+
+  <p class="privacy">Privacy: the snapshot is read on your computer and is not saved. Only the extracted text (and any links in it) is sent to the FraudShield server you configured in config.js. Sharing stops as soon as the snapshot is taken.</p>
+
+  <script src="vendor/tesseract.min.js"></script>
+  <script type="module" src="scan.js"></script>
+</body>
+</html>
