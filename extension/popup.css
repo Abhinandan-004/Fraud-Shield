@@ -1,0 +1,76 @@
+:root {
+  --ink: #15222c; --bg: #ffffff; --muted: #5d6c77; --line: #d9e0e5; --soft: #f3f5f7; --state: #6b7a86;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #e8eef2; --bg: #131c23; --muted: #9bacb8; --line: #2a3844; --soft: #1b2630; }
+}
+* { box-sizing: border-box; }
+body {
+  width: 330px; margin: 0; padding: 14px;
+  font: 13px/1.45 "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ink); background: var(--bg);
+}
+header { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+
+#verdictBand {
+  --state: #6b7a86;
+  display: flex; gap: 14px; align-items: center;
+  background: color-mix(in srgb, var(--state) 13%, var(--bg));
+  border-radius: 8px; padding: 14px;
+}
+#verdictBand[data-state="fraud"]      { --state: #e0472f; }
+#verdictBand[data-state="suspicious"] { --state: #d08a00; }
+#verdictBand[data-state="safe"]       { --state: #2aa56e; }
+
+.shield { width: 72px; height: 72px; flex: none; }
+.track { fill: none; stroke: color-mix(in srgb, var(--state) 22%, transparent); stroke-width: 4; }
+.ring  { fill: none; stroke: var(--state); stroke-width: 4; stroke-linecap: round;
+         stroke-dasharray: 175.93; stroke-dashoffset: 175.93;
+         transform: rotate(-90deg); transform-origin: 32px 32px; transition: stroke-dashoffset .7s ease; }
+#verdictBand[data-state="loading"] .ring { stroke-dasharray: 44 132; stroke-dashoffset: 0; animation: spin 1s linear infinite; }
+.shape { fill: color-mix(in srgb, var(--state) 16%, var(--bg)); stroke: var(--state); stroke-width: 2.4; stroke-linejoin: round; }
+.mark  { fill: none; stroke: var(--state); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; display: none; }
+#verdictBand[data-state="safe"] .m-safe,
+#verdictBand[data-state="suspicious"] .m-warn,
+#verdictBand[data-state="fraud"] .m-warn,
+#verdictBand[data-state="unknown"] .m-unknown,
+#verdictBand[data-state="error"] .m-unknown { display: block; }
+.m-safe { stroke-dasharray: 1; stroke-dashoffset: 1; }
+#verdictBand[data-state="safe"] .m-safe { animation: draw .5s .25s ease forwards; }
+#verdictBand[data-state="fraud"] .shield { animation: pulse 1.6s ease-in-out infinite; }
+
+.text { min-width: 0; }
+#verdictWord { margin: 0; font-size: 20px; font-weight: 700; color: var(--state); letter-spacing: -0.01em; }
+#confidence { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+#reason { margin: 6px 0 0; font-size: 12.5px; }
+
+#subject { margin: 10px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+#hint { margin: 8px 0 0; padding: 8px 10px; background: var(--soft); border-radius: 4px; font-size: 12px; }
+
+.row { display: flex; gap: 6px; margin-top: 12px; }
+button {
+  flex: 1; padding: 7px 6px; font: inherit; font-weight: 600; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 4px; cursor: pointer;
+}
+button:hover { background: var(--soft); }
+button:focus-visible { outline: 2px solid #2a6df4; outline-offset: 1px; }
+button.danger { color: #e0472f; border-color: color-mix(in srgb, #e0472f 45%, var(--line)); }
+button:disabled { opacity: .5; cursor: default; }
+
+#why { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+#why h2 { margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+#whyList { list-style: none; margin: 0; padding: 0; }
+#whyList li { display: grid; grid-template-columns: 1fr 70px; gap: 8px; align-items: center; margin: 3px 0; }
+.bar { height: 6px; border-radius: 3px; background: #e0472f; }
+.bar.neg { background: #2aa56e; }
+
+.feedback { border-top: 1px solid var(--line); padding-top: 12px; }
+#toast { min-height: 18px; margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+footer { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; }
+#stats { margin: 0 0 6px; font-size: 12px; color: var(--muted); }
+.toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+@keyframes spin  { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
+@keyframes draw  { to { stroke-dashoffset: 0; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
