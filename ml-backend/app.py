@@ -56,12 +56,18 @@ def phish_probability(model, X, phish_class) -> float:
     return float(model.predict_proba(X)[0][classes.index(phish_class)])
 
 
-def build_verdict(score: float, threshold: float) -> dict:
+def build_verdict_email(score: float, threshold: float) -> dict:
     is_phish = score >= threshold
     return {
         "verdict": "phishing" if is_phish else "safe",
         "confidence": round(score if is_phish else 1 - score, 4),
         "phishing_score": round(score, 4),
+    }
+def build_verdict_url(prediction, score):
+    return {
+        "verdict": "phishing" if prediction == 1 else "safe",
+        "confidence": round(float(max(score, 1 - score)), 4),
+        "phishing_score": round(float(score), 4)
     }
 
 
@@ -96,17 +102,21 @@ def predict_email(payload: EmailInput):
         score = phish_probability(email_model, X, EMAIL_PHISH_CLASS)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Email prediction failed: {e}")
-    return build_verdict(score, EMAIL_THRESHOLD)
+    return build_verdict_email(score, EMAIL_THRESHOLD)
 
 
 @app.post("/predict/url")
 def predict_url(payload: UrlInput):
     try:
         feats = extract_features(payload.url)
-        score = phish_probability(url_model, feats, URL_PHISH_CLASS)
+        prediction = url_model.predict(feats)[0]
+        score = phish_probability(
+            url_model, feats, URL_PHISH_CLASS
+        )
+        return build_verdict_url(prediction, score)
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"URL prediction failed: {e}")
-    return build_verdict(score, URL_THRESHOLD)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/explain")
